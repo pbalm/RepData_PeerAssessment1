@@ -3,9 +3,53 @@
 
 ## Loading and preprocessing the data
 
+```{r}
+```
+
+I'm assuming that the current working directory has been set to the directory where the
+data is -- this could be the top-level directory in the Git repository. I'm first unzipping,
+which produces a .csv file, and then reading the csv file. I also print the summary to show
+that the data has actually been read and to give an idea of what it's like.
+
+```{r}
+unzip('activity.zip')
+data <- read.csv('activity.csv')
+summary(data)
+```
+
+### Preprocessing
+
+We will need a dataset that has the days (date) and the total steps for that day, one row per day. I store this in the stepsdata data frame.
+
+
+```{r}
+totalsteps <- tapply(data$steps, data$date, FUN="sum")
+stepsdata <- as.data.frame(cbind(names(totalsteps), totalsteps))
+```
+
 
 
 ## What is mean total number of steps taken per day?
+
+The code here produces a histogram of the mean of the total number of steps taken each day.
+Each day has 288 data points, corresponding to one point every 5 minutes.
+
+```{r}
+hist(totalsteps, xlab="Number of steps per day", main = NULL)
+```
+
+Calculate the mean number of steps per day:
+
+```{r}
+mean(totalsteps, na.rm=TRUE)
+```
+
+Calculate the median number of steps per day:
+
+```{r}
+median(totalsteps, na.rm=TRUE)
+```
+
 
 
 
