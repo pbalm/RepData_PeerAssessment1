@@ -275,4 +275,3 @@ xyplot(plotdata$means~plotdata$interval|plotdata$weekend,
 
 ![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20.png) 
 
-c

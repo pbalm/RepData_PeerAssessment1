@@ -201,4 +201,3 @@ xyplot(plotdata$means~plotdata$interval|plotdata$weekend,
        ylab="Average steps per interval")
 ```
 
-c
