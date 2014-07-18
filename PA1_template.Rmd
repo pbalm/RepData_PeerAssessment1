@@ -151,15 +151,54 @@ Compared to the mean and median that we calculated earlier on, the result is not
 First I'm adding a column to the data that says whether a given row falls in a weekend, or not.
 
 ```{r}
-weekend <- c("Saturday", "Sunday")
-isWeekendVector <- as.Date(data$date) %in% weekend
-cbind(totsteps.imputed, isWeekendVector)
+weekendDays <- c("Saturday", "Sunday")
+isWeekendVector <- weekdays(as.Date(data$date)) %in% weekendDays
+weekend <- as.factor(isWeekendVector)
+levels(weekend) <- c("Weekdays", "Weekend")
+activity.imputed <- cbind(activity.imputed, weekend)
 ```
 
-And now produce the same plots as before, but split over whether the day is on a weekend or not:
+Now I have to calculate, as before, the average steps taken in each interval, however, I have to separate out the weekdays and the weekends.
 
 ```{r}
-stepsave <- tapply(data$steps, data$interval, FUN="mean", na.rm=TRUE)
-intervaloneday <- data$interval[1:288]
+calcmeans <- function(x) tapply(x$steps, x$interval, FUN="mean", na.rm=TRUE)
+
+splitdf <- split(activity.imputed, activity.imputed$weekend)
+splitdfmeans <- lapply(splitdf, calcmeans)
 ```
 
+Now rebuild a dataframe for easy plotting: (I'll be looking forward to reviewing other students' assignments for ways to do this nicely.)
+
+```{r}
+means.weekdays <- splitdfmeans[[1]]
+means.weekend <- splitdfmeans[[2]]
+factor.weekdays <- factor(rep("Weekdays", length(means.weekdays)),
+                          c("Weekdays", "Weekend"))
+factor.weekend <- factor(rep("Weekend", length(means.weekend)),
+                          c("Weekdays", "Weekend"))
+plotdata <- as.data.frame(rbind(cbind(means.weekdays, factor.weekdays),
+            cbind(means.weekend, factor.weekend)))
+interval <- as.numeric(row.names(plotdata))
+plotdata <- cbind(interval, plotdata)
+colnames(plotdata) <- c("interval", "means", "weekend")
+```
+
+Turn the weekend column into an appropriate factor:
+
+```{r}
+weekend <- as.factor(plotdata$weekend)
+levels(weekend) <- c("Weekdays", "Weekend")
+plotdata$weekend <- weekend
+```
+
+
+```{r}
+library(lattice)
+xyplot(plotdata$means~plotdata$interval|plotdata$weekend, 
+       layout=c(1,2), 
+       type="l",
+       xlab="Interval",
+       ylab="Average steps per interval")
+```
+
+c
